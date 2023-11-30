@@ -31,7 +31,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   [publicProvider()]
 );
 
-const projectId = 'ORBITALPROTOTCOL';
+const projectId = '8b0136c89531422c113eb50f0bb44b64';
 
 const { wallets } = getDefaultWallets({
   appName: 'Orbital',

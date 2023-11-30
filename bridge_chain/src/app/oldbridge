@@ -2,8 +2,8 @@
 
 import Image from 'next/image'
 import { useState } from 'react';
-import { useEffect } from "react";
 import { useSendTransaction, usePrepareSendTransaction, useAccount, useSignMessage, useContractRead } from 'wagmi'
+import { useEffect } from "react";
 import abi from './lib/abi';
 import tokenAbi from './lib/tokenAbi';
 import abiJson from './lib/tokenAbi.json';
@@ -22,36 +22,135 @@ const config = {
 }
 
 const Bridge = () => {
-
     const { isConnected, address } = useAccount();
     const [ willReceive, setWillReceive ] = useState()
      // State to store the contract data
     const [contractData, setContractData] = useState(null);
-    // State to store allowance data
-    const [allowance, setAllowance] = useState(0);
       
     useEffect(() => {
         console.log(
             `Current connection status: ${isConnected ? "connected" : "disconnected"}`
         );
     }, [isConnected]);
+    
 
-    const {data: allowanceData, isError: allowanceError, isLoading : allowanceLoading} = useContractRead({
-        address: config.coinAddress,
-        abi: abiJson,
-        functionName: 'allowance',
-        args: [address.toString(), config.contractAddress],
-    })
+    const useFetchContractData = async (contractAddress, contractAbi, functionName, functionParams) => {
+        const {data, error, loading, isError} = useContractRead({
+            address: contractAddress,
+            abi: contractAbi,
+            functionName: functionName,
+            args: functionParams,
+            
+        })
 
-    useEffect(() => {
-            console.log("allowanceLoading: " + allowanceLoading)
-            console.log("allowanceError: " + allowanceError)
-            console.log("allowanceData: " + allowanceData)
-            if (!allowanceLoading && !allowanceError) {
-                console.log("Update ")
-                setAllowance(allowanceData);
-            }
-    }, [allowanceLoading, allowanceError, allowanceData]); 
+        if (!loading && !error && data) {
+            setContractData(data);
+            console.log('Contract Data:', data);
+        }
+
+        return contractData;
+    };
+
+    // Effect to trigger the contract read operation
+    // useEffect(() => {
+    //     try {
+    //         const contractAddress = config.coinAddress; // Replace with your contract address
+    //         const contractAbi = abiJson; // Replace with your contract ABI
+    //         const functionName = 'allowance';
+    //         const functionParams = [address.toString(), config.contractAddress]; 
+
+    //         // Use the useContractRead hook to read data from the smart contract
+    //         const { data, loading, error } = useContractRead(
+    //             contractAddress,
+    //             contractAbi,
+    //             functionName,
+    //             functionParams
+    //         );
+
+    //         // Check if the data is available and update the state
+    //         if (!loading && !error && data) {
+    //             setContractData(data);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error reading contract data:', error);
+    //     }
+    //     // const fetchData = async () => {
+    //     // };
+
+    //     // // Call the fetchData function when the component mounts or when specific dependencies change
+    //     // fetchData();
+    // }, [address]); 
+
+
+    // const {data, error, loading, isError} = useContractRead({
+    //     address: config.coinAddress,
+    //     abi: tokenAbi,
+    //     functionName: 'allowance',
+    //     args: [address.toString(), config.contractAddress],
+    // })
+
+    
+
+
+
+    // console.log("config", config)
+    // console.log("address", address)
+    // console.log("contractdata", data)
+    // console.log("contractReaderror", error)
+    // console.log("contractReadisError", isError)
+
+    // const [data, isLoading, isSuccess] = useContractRead({
+    //     address: config.coinAddress,
+    //     abi: abiJson,
+    //     // functionName: 'allowance',
+    //     args: [address, config.contractAddress],
+    //     onError(error) {
+    //         console.log('Error', error)
+    //     },
+    // })
+
+    const contractAddress = config.coinAddress; // Replace with your contract address
+    const contractAbi = abiJson; // Replace with your contract ABI
+
+
+    const handleSubmit = async () => {
+        event.preventDefault();
+
+        // console.log('Contract Data End:', contractData);
+
+        const functionName = 'allowance';
+        const functionParams = [address.toString(), config.contractAddress]; 
+    
+        // // const data = {
+        // //   amount: event.target.amount.value
+        // // }
+
+        // const {data, error, loading, isError} = useContractRead({
+        //     address: config.coinAddress,
+        //     abi: abiJson,
+        //     functionName: 'allowance',
+        //     args: [address.toString(), config.contractAddress],
+        // })
+
+        
+
+        // Call the custom hook to fetch contract data
+        const { contractData } = useFetchContractData(
+            contractAddress,
+            contractAbi,
+            functionName,
+            functionParams
+        );
+    
+        // Access the fetched contract data
+        console.log('Fetched Contract Data:', contractData);
+
+        // const { data, loading, error } = useContractRead(
+        //     contractAddress,
+        //     contractAbi,
+        //     functionName,
+        //     functionParams
+        //   );
     
         // Handle loading state
         // useEffect(() => {
@@ -74,37 +173,8 @@ const Bridge = () => {
         //     console.log('Contract Data:', data);
         //     }
         // }, [data]);
-
-    // useContractRead hook to check allowance
-    // const { data: allowanceData, isLoading: allowanceLoading, error: allowanceError , isFetching} = useContractRead(
-    //     config.coinAddress,
-    //     abiJson,
-    //     'allowance',
-    //     [address, config.contractAddress] // Replace with the spender's address
-    // );
-
-    // // Update the allowance state when data is available
-    // useEffect(() => {
-    //     console.log("allowanceLoading: " + allowanceLoading)
-    //     console.log("allowanceError: " + allowanceError)
-    //     console.log("allowanceData: " + allowanceData)
-    //     console.log("isFetching: " + isFetching)
-    //     if (!allowanceLoading && !allowanceError) {
-    //         setAllowance(allowanceData);
-    //     }
-    // }, [allowanceData, allowanceLoading, allowanceError]);
-    
-    const handleSubmit = async () => {
-        useEffect(() => {
-            console.log("allowanceLoading: " + allowanceLoading)
-            console.log("allowanceError: " + allowanceError)
-            console.log("allowanceData: " + allowanceData)
-            if (!allowanceLoading && !allowanceError) {
-                setAllowance(allowanceData);
-            }
-        }, [allowanceLoading, allowanceError, allowanceData]); 
-        console.log("allowance", allowance)
-        console.log("allowance", allowanceData)
+        
+        // console.log("response", allowance)
     }
 
     async function handleFee(event) {
@@ -121,12 +191,11 @@ const Bridge = () => {
 
   return (
     <>
-         <form method="post" name="myForm" id="myForm">
+         <form method="post" name="myForm" id="myForm" onSubmit={handleSubmit}>
                             <p className="mb-0" id="error-msg"></p>
                             <div id="simple-msg"></div>
                             <div className="grid lg:grid-cols-1">
                                 <div className="mb-5">
-                                    {allowance && (<div>Allowance: {allowance}</div>) }
                                     <div className="text-start">
                                         <label className="font-semibold">To Wallet Address:</label>
                                         <input name="name" id="name" type="text" className="form-input w-full text-[15px] py-2 px-3 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded-full outline-none border border-gray-200 focus:border-violet-600 dark:border-gray-800 dark:focus:border-violet-600 focus:ring-0 mt-2" placeholder="Address : -" disabled/>
@@ -160,7 +229,7 @@ const Bridge = () => {
                                 </div>
                             </div>
                             <div className="mb-5">
-                                <button type="button" onClick={handleSubmit} name="send" className="btn bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white rounded-full justify-center flex w-full items-center">Submit Transaction</button>
+                                <button type="submit" id="submit" name="send" className="btn bg-violet-600 hover:bg-violet-700 border-violet-600 hover:border-violet-700 text-white rounded-full justify-center flex w-full items-center">Submit Transaction</button>
                             </div>
                         </form>
     </>
