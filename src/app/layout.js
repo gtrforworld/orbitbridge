@@ -1,5 +1,6 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { ChakraProvider } from "@chakra-ui/react";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -11,7 +12,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className='dark scroll-smooth' dir='ltr'>
-      <body className="font-urbanist text-base text-black dark:text-white dark:bg-slate-900">{children}</body>
+      <body className="font-urbanist text-base text-black dark:text-white dark:bg-slate-900">
+        <ChakraProvider>
+          {children}
+        </ChakraProvider>
+      </body>
     </html>
   )
 }
