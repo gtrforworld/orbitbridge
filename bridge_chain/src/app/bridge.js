@@ -26,6 +26,7 @@ const Bridge = () => {
         functionName: 'allowance',
         args: [address.toString(), config.contractAddress],
       })
+      
     useEffect(() => {
         console.log(
             `Current connection status: ${isConnected ? "connected" : "disconnected"}`
