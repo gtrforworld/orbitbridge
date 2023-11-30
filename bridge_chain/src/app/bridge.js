@@ -20,7 +20,12 @@ const Bridge = () => {
     const { isConnected, address } = useAccount();
     const [ willReceive, setWillReceive ] = useState()
     // const useContractRead = useContractRead();
-    
+    const {data, error, isError} = useContractRead({
+        address: config.coinAddress,
+        abi: abiJson,
+        functionName: 'allowance',
+        args: [address.toString(), config.contractAddress],
+      })
     useEffect(() => {
         console.log(
             `Current connection status: ${isConnected ? "connected" : "disconnected"}`
@@ -28,16 +33,19 @@ const Bridge = () => {
     }, [isConnected]);
     console.log("config", config)
     console.log("address", address)
+    console.log("contractdata", data)
+    console.log("contractReaderror", error)
+    console.log("contractReadisError", isError)
 
-    const [data, isLoading, isSuccess] = useContractRead({
-        address: config.coinAddress,
-        abi: abiJson,
-        // functionName: 'allowance',
-        args: [address, config.contractAddress],
-        onError(error) {
-            console.log('Error', error)
-        },
-    })
+    // const [data, isLoading, isSuccess] = useContractRead({
+    //     address: config.coinAddress,
+    //     abi: abiJson,
+    //     // functionName: 'allowance',
+    //     args: [address, config.contractAddress],
+    //     onError(error) {
+    //         console.log('Error', error)
+    //     },
+    // })
 
 
     async function handleSubmit(event) {
